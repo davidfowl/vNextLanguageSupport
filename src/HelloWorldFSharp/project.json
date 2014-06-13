@@ -1,0 +1,13 @@
+﻿{
+    "dependencies": {
+        "Loader.FSharp": ""
+    },
+    "code": "**/*.fs",
+    "loader": {
+        "name": "Loader.FSharp",
+        "type": "Loader.FSharp.FSharpAssemblyLoader"
+    },
+    "configurations" : {
+        "net45" : { }
+    }
+}
