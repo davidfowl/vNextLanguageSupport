@@ -1,0 +1,17 @@
+﻿{
+    "dependencies": {
+        "Microsoft.Framework.Runtime": "0.1-alpha-*"
+    },
+
+    "configurations" : {
+        "net45" : { 
+            "dependencies": {
+            }
+        },
+        "k10" : { 
+            "dependencies": {
+                "System.Runtime": "4.0.20.0"
+            }
+        }
+    }
+}
