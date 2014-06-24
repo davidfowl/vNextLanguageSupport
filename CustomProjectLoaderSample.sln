@@ -11,6 +11,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Loader.FSharp", "src\Loader
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HelloWorldFSharp", "src\HelloWorldFSharp\HelloWorldFSharp.kproj", "{7F30C8B1-7D35-4C99-ACD3-00A2A696B0AE}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Classlibrary1", "src\Classlibrary1\Classlibrary1.kproj", "{0A362E72-7D7E-42DC-9C93-17F03C082F91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{7F30C8B1-7D35-4C99-ACD3-00A2A696B0AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7F30C8B1-7D35-4C99-ACD3-00A2A696B0AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F30C8B1-7D35-4C99-ACD3-00A2A696B0AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A362E72-7D7E-42DC-9C93-17F03C082F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A362E72-7D7E-42DC-9C93-17F03C082F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A362E72-7D7E-42DC-9C93-17F03C082F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A362E72-7D7E-42DC-9C93-17F03C082F91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

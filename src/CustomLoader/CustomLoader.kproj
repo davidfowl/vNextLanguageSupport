@@ -25,7 +25,9 @@
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MyLoader.cs" />
+    <Compile Include="CscCompilation.cs" />
+    <Compile Include="CscLoader.cs" />
+    <Compile Include="CscProjectReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="project.json" />

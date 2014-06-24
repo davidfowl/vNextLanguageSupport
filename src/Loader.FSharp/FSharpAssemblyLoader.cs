@@ -7,6 +7,7 @@ using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.Framework.Runtime;
 using NuGet;
+using System.Collections.Generic;
 
 namespace Loader.FSharp
 {
@@ -43,22 +44,57 @@ namespace Loader.FSharp
             string outputFile = Path.Combine(project.ProjectDirectory, "bin", VersionUtility.GetShortFrameworkName(_environment.TargetFramework), assemblyName + ".dll");
             Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
 
-            // csc /out:foo.dll / target:library Program.cs
             var args = new StringBuilder();
             args.Append("--noframework ")
                 .AppendFormat(@"--out:""{0}""", outputFile)
                 .Append(" ")
                 .Append("--target:library ")
-                .Append(String.Join(" ", project.SourceFiles.Select(s => "\"" + s + "\"")))
+                .Append(string.Join(" ", project.SourceFiles.Select(s => "\"" + s + "\"")))
                 .Append(" ");
+
+            var tempFiles = new List<string>();
 
             foreach (var reference in export.MetadataReferences)
             {
+                // References to nuget packges on disk
                 var fileRef = reference as IMetadataFileReference;
                 if (fileRef != null)
                 {
                     args.AppendFormat(@"-r:""{0}""", fileRef.Path)
                         .Append(" ");
+                }
+
+                // References to other projects
+                var projectRef = reference as IMetadataProjectReference;
+                if (projectRef != null)
+                {
+                    var tempReferenceFile = Path.Combine(Path.GetTempPath(), reference.Name + ".dll");
+
+                    // Write the assembly reference to disk
+                    using (var fs = File.OpenWrite(tempReferenceFile))
+                    {
+                        projectRef.WriteReferenceAssemblyStream(fs);
+                    }
+
+                    args.AppendFormat(@"-r:""{0}""", tempReferenceFile)
+                        .Append(" ");
+
+                    tempFiles.Add(tempReferenceFile);
+                }
+
+                // Assembly neutral references
+                var embeddedRef = reference as IMetadataEmbeddedReference;
+                if (embeddedRef != null)
+                {
+                    // Write the assembly reference to disk
+                    var tempEmbeddedReferenceFile = Path.Combine(Path.GetTempPath(), reference.Name + ".dll");
+
+                    File.WriteAllBytes(tempEmbeddedReferenceFile, embeddedRef.Contents);
+
+                    args.AppendFormat(@"-r:""{0}""", tempEmbeddedReferenceFile)
+                        .Append(" ");
+
+                    tempFiles.Add(tempEmbeddedReferenceFile);
                 }
             }
 
@@ -88,6 +124,9 @@ namespace Loader.FSharp
                 return null;
             }
 
+            // Nuke the temporary references on disk
+            tempFiles.ForEach(File.Delete);
+            
             return _loaderEngine.LoadFile(outputFile);
         }
 
@@ -100,5 +139,6 @@ namespace Loader.FSharp
         {
             Console.WriteLine(e.Data);
         }
+
     }
 }

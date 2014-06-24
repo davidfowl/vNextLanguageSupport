@@ -1,11 +1,12 @@
 ﻿{
     "dependencies": {
         "CustomLoader": "",
+        "Classlibrary1": "",
         "Newtonsoft.Json": "5.0.8"
     },
     "loader": {
         "name": "CustomLoader",
-        "type": "CustomLoader.MyLoader"
+        "type": "CustomLoader.CscLoader"
     },
     "configurations" : {
         "net45" : { },

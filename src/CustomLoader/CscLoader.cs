@@ -1,18 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Versioning;
 using Microsoft.Framework.Runtime;
 
 namespace CustomLoader
 {
-    public class MyLoader : IAssemblyLoader, ILibraryExportProvider
+    public class CscLoader : IAssemblyLoader, ILibraryExportProvider
     {
         private readonly IProjectResolver _projectResolver;
         private readonly IApplicationEnvironment _environment;
         private readonly ILibraryExportProvider _exportProvider;
         private readonly IAssemblyLoaderEngine _loaderEngine;
 
-        public MyLoader(IProjectResolver projectResolver,
+        public CscLoader(IProjectResolver projectResolver,
                         IApplicationEnvironment environment,
                         ILibraryExportProvider exportProvider,
                         IAssemblyLoaderEngine loaderEngine)
@@ -31,28 +33,17 @@ namespace CustomLoader
                 return null;
             }
 
-            var projectExportProvider = new ProjectExportProvider(_projectResolver);
-            FrameworkName effectiveTargetFramework;
-            var export = projectExportProvider.GetProjectExport(_exportProvider, assemblyName, _environment.TargetFramework, out effectiveTargetFramework);
+            var compilation = CreateCompilation(project, _environment.TargetFramework);
 
+            var tempFile = Path.Combine(Path.GetTempPath(), "CustomLoader", ".loaded", project.Name + ".dll");
+            Directory.CreateDirectory(Path.GetDirectoryName(tempFile));
 
-            // These are the metadata references being used by your project.
-            // Everything in your project.json is resolved and normailzed here:
-            // - Project references
-            // - Package references are turned into the appropriate assemblies
-            // Each IMetadaReference maps to an assembly
-            foreach (var reference in export.MetadataReferences)
+            using (var fs = File.OpenWrite(tempFile))
             {
-                var fileReference = reference as IMetadataFileReference;
-                if (fileReference != null)
-                {
-                    Console.WriteLine(fileReference.Path);
-                }
-
-                // Right now, project references are exposed as IRoslynMetadataReference
+                compilation.EmitAssemblyStream(fs);
             }
 
-            return null;
+            return _loaderEngine.LoadFile(tempFile);
         }
 
         public ILibraryExport GetLibraryExport(string name, FrameworkName targetFramework)
@@ -68,7 +59,20 @@ namespace CustomLoader
             // dependencies and yourself.
 
             // If you don't export any APIs then returning null is fine
-            return null;
+            var compilation = CreateCompilation(project, targetFramework);
+
+            return compilation.GetExport();
+        }
+
+        private CscCompilation CreateCompilation(Project project, FrameworkName targetFramework)
+        {
+            // This call could be cached
+
+            var projectExportProvider = new ProjectExportProvider(_projectResolver);
+            FrameworkName effectiveTargetFramework;
+            var export = projectExportProvider.GetProjectExport(_exportProvider, project.Name, targetFramework, out effectiveTargetFramework);
+
+            return new CscCompilation(project, export.MetadataReferences);
         }
     }
 }
