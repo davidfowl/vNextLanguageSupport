@@ -1,11 +1,12 @@
 ﻿{
     "dependencies": {
-        "Loader.FSharp": ""
+        "FSharpSupport": ""
     },
-    "code": "**/*.fs",
-    "loader": {
-        "name": "Loader.FSharp",
-        "type": "Loader.FSharp.FSharpAssemblyLoader"
+    "code": ["Program.fs"],
+    "language": {
+        "name": "F#",
+        "assembly": "FSharpSupport",
+        "projectExportProviderType": "FSharpSupport.FSharpProjectExportProvider"
     },
     "configurations" : {
         "net45" : { }

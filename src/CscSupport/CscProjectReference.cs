@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.Framework.Runtime;
@@ -40,12 +41,7 @@ namespace CscSupport
             }
         }
 
-        public IProjectBuildResult EmitAssembly(string outputPath)
-        {
-            return Emit(outputPath, emitPdb: true, emitDocFile: true);
-        }
-
-        public IProjectBuildResult EmitAssembly(Stream assemblyStream, Stream pdbStream)
+        public Assembly Load(IAssemblyLoaderEngine loaderEngine)
         {
             string outputDir = Path.Combine(Path.GetTempPath(), "dynamic-assemblies");
 
@@ -53,23 +49,17 @@ namespace CscSupport
 
             if (!result.Success)
             {
-                return result;
+                throw new CompilationException(result.Errors.ToList());
             }
 
             var assemblyPath = Path.Combine(outputDir, _project.Name + ".dll");
-            var pdbPath = Path.Combine(outputDir, _project.Name + ".pdb");
+            
+            return loaderEngine.LoadFile(assemblyPath);
+        }
 
-            using (var afs = File.OpenRead(assemblyPath))
-            {
-                afs.CopyToAsync(assemblyStream);
-            }
-
-            using (var pdbfs = File.OpenRead(pdbPath))
-            {
-                pdbfs.CopyToAsync(pdbStream);
-            }
-
-            return result;
+        public IProjectBuildResult EmitAssembly(string outputPath)
+        {
+            return Emit(outputPath, emitPdb: true, emitDocFile: true);
         }
 
         public void EmitReferenceAssembly(Stream stream)
@@ -92,7 +82,7 @@ namespace CscSupport
             }
             finally
             {
-                Directory.Delete(outputDir);
+                Directory.Delete(outputDir, true);
             }
         }
 
