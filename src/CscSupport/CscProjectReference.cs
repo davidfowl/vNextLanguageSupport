@@ -47,9 +47,9 @@ namespace CscSupport
 
         public IProjectBuildResult EmitAssembly(Stream assemblyStream, Stream pdbStream)
         {
-            string outputDir = Path.Combine(Path.GetTempPath(), _project.Name);
+            string outputDir = Path.Combine(Path.GetTempPath(), "dynamic-assemblies");
 
-            var result = Emit(outputDir, emitPdb: false, emitDocFile: false);
+            var result = Emit(outputDir, emitPdb: true, emitDocFile: false);
 
             if (!result.Success)
             {
@@ -74,7 +74,7 @@ namespace CscSupport
 
         public void EmitReferenceAssembly(Stream stream)
         {
-            string outputDir = Path.Combine(Path.GetTempPath(), _project.Name);
+            string outputDir = Path.Combine(Path.GetTempPath(), "reference-assembly-" + Guid.NewGuid().ToString());
 
             try
             {
@@ -98,11 +98,11 @@ namespace CscSupport
 
         public IProjectBuildResult GetDiagnostics()
         {
-            string outputDir = Path.Combine(Path.GetTempPath(), _project.Name);
+            string outputDir = Path.Combine(Path.GetTempPath(), "diagnostics-" + Guid.NewGuid().ToString());
 
             try
             {
-                return Emit(outputDir, emitPdb: false, emitDocFile: false);
+                return Emit(Path.GetTempPath(), emitPdb: false, emitDocFile: false);
             }
             finally
             {
@@ -117,6 +117,7 @@ namespace CscSupport
 
         public IProjectBuildResult Emit(string outputPath, bool emitPdb, bool emitDocFile)
         {
+            var tempBasePath = Path.Combine(outputPath, _project.Name, "obj");
             var outputDll = Path.Combine(outputPath, _project.Name + ".dll");
 
             // csc /out:foo.dll / target:library Program.cs
@@ -126,11 +127,14 @@ namespace CscSupport
                     .Append("/noconfig ")
                     .Append("/nostdlib ");
 
+            Directory.CreateDirectory(tempBasePath);
+
             if (emitPdb)
             {
                 var pdb = Path.Combine(outputPath, _project.Name + ".pdb");
 
                 cscArgBuilder = cscArgBuilder
+                    .Append("/debug ")
                     .AppendFormat(@"/pdb:""{0}"" ", pdb);
             }
 
@@ -157,7 +161,7 @@ namespace CscSupport
             foreach (var reference in _projectExport.MetadataReferences)
             {
                 // Skip this project
-                if (reference.Name == "CustomLoader")
+                if (reference.Name == typeof(CscProjectReference).Assembly.GetName().Name)
                 {
                     continue;
                 }
@@ -174,7 +178,7 @@ namespace CscSupport
                 var embeddedReference = reference as IMetadataEmbeddedReference;
                 if (embeddedReference != null)
                 {
-                    var tempEmbeddedPath = Path.Combine(Path.GetTempPath(), reference.Name + ".dll");
+                    var tempEmbeddedPath = Path.Combine(tempBasePath, reference.Name + ".dll");
 
                     // Write the ANI to disk for csc
                     File.WriteAllBytes(tempEmbeddedPath, embeddedReference.Contents);
@@ -191,7 +195,7 @@ namespace CscSupport
                     // You can write the reference assembly to the stream
                     // and add the reference to your compiler
 
-                    var tempProjectDll = Path.Combine(Path.GetTempPath(), reference.Name + ".dll");
+                    var tempProjectDll = Path.Combine(tempBasePath, reference.Name + ".dll");
 
                     using (var fs = File.OpenWrite(tempProjectDll))
                     {
@@ -229,6 +233,7 @@ namespace CscSupport
             // Nuke the temporary references on disk
             tempFiles.ForEach(File.Delete);
 
+            Directory.Delete(tempBasePath);
 
             return new ProjectBuildResult(success: true, warnings: new string[0], errors: new string[0]);
         }
