@@ -92,11 +92,11 @@ namespace CscSupport
 
             try
             {
-                return Emit(Path.GetTempPath(), emitPdb: false, emitDocFile: false);
+                return Emit(outputDir, emitPdb: false, emitDocFile: false);
             }
             finally
             {
-                Directory.Delete(outputDir);
+                Directory.Delete(outputDir, true);
             }
         }
 

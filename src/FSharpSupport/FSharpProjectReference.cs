@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Versioning;
 using Microsoft.Framework.Runtime;
 
@@ -28,7 +30,7 @@ namespace FSharpSupport
         {
             get
             {
-                throw new NotImplementedException();
+                return _project.Name;
             }
         }
 
@@ -36,16 +38,16 @@ namespace FSharpSupport
         {
             get
             {
-                throw new NotImplementedException();
+                return _project.ProjectFilePath;
             }
         }
 
-        public IProjectBuildResult EmitAssembly(string outputPath)
+        public Assembly Load(IAssemblyLoaderEngine loaderEngine)
         {
             throw new NotImplementedException();
         }
 
-        public IProjectBuildResult EmitAssembly(Stream assemblyStream, Stream pdbStream)
+        public IProjectBuildResult EmitAssembly(string outputPath)
         {
             throw new NotImplementedException();
         }
@@ -57,12 +59,12 @@ namespace FSharpSupport
 
         public IProjectBuildResult GetDiagnostics()
         {
-            throw new NotImplementedException();
+            return new ProjectBuildResult(success: false, warnings: Enumerable.Empty<string>(), errors: Enumerable.Empty<string>());
         }
 
         public IList<ISourceReference> GetSources()
         {
-            throw new NotImplementedException();
+            return new List<ISourceReference>();
         }
     }
 }
