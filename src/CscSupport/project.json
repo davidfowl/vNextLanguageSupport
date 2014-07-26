@@ -1,6 +1,7 @@
 ﻿{
     "dependencies": {
-        "Microsoft.Framework.Runtime": "1.0.0-*"
+        "Microsoft.Framework.Runtime": "1.0.0-*",
+        "Microsoft.Framework.Runtime.Interfaces": "1.0.0-*"
     },
 
     "configurations" : {

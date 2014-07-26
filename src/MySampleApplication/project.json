@@ -4,9 +4,9 @@
         "Classlibrary1": "",
         "Newtonsoft.Json": "5.0.8"
     },
-    "loader": {
-        "name": "CustomLoader",
-        "type": "CustomLoader.CscLoader"
+    "foo": {
+        "assembly": "CustomLoader",
+        "projectExportProviderType": "CustomLoader.CscLoader"
     },
     "configurations" : {
         "net45" : { },
