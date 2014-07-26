@@ -125,7 +125,8 @@ namespace CscSupport
                     .AppendFormat(@"/out:""{0}"" ", outputDll)
                     .Append("/target:library ")
                     .Append("/noconfig ")
-                    .Append("/nostdlib ");
+                    .Append("/nostdlib ")
+                    .Append("/nologo ");
 
             Directory.CreateDirectory(tempBasePath);
 
@@ -209,7 +210,8 @@ namespace CscSupport
                 }
             }
 
-            Console.WriteLine(cscArgs.ToString());
+            // For debugging
+            // Console.WriteLine(cscArgs.ToString());
 
             var si = new ProcessStartInfo
             {
@@ -224,10 +226,25 @@ namespace CscSupport
             var process = Process.Start(si);
             process.WaitForExit();
 
+            var errors = new List<string>();
+            var warnings = new List<string>();
+
+            string line = null;
+            while ((line = process.StandardOutput.ReadLine()) != null)
+            {
+                if (line.Contains(" warning "))
+                {
+                    warnings.Add(line);
+                }
+                else
+                {
+                    errors.Add(line);
+                }
+            }
+
             if (process.ExitCode != 0)
             {
-                // TODO: Parse errors from std(err/out)
-                return new ProjectBuildResult(success: false, warnings: new string[0], errors: new[] { "Compilation failed" });
+                return new ProjectBuildResult(success: false, warnings: warnings, errors: errors);
             }
 
             // Nuke the temporary references on disk
@@ -235,7 +252,7 @@ namespace CscSupport
 
             Directory.Delete(tempBasePath);
 
-            return new ProjectBuildResult(success: true, warnings: new string[0], errors: new string[0]);
+            return new ProjectBuildResult(success: true, warnings: warnings, errors: errors);
         }
     }
 }

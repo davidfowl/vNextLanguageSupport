@@ -17,6 +17,7 @@ namespace MySampleApplication
 
         public void Main(string[] args)
         {
+            int x;
             var c = new Classlibrary1.Class1();
             Console.WriteLine(c);
 
