@@ -120,7 +120,7 @@ namespace FSharpSupport
                          .Append("--nologo ")
                          .AppendFormat(@"--out:""{0}""", outputDll)
                          .Append(" ")
-                         .AppendFormat("--target:{0} ", emitExe ? "exe" : "dll");
+                         .AppendFormat("--target:{0} ", emitExe ? "exe" : "library");
 
             Directory.CreateDirectory(tempBasePath);
 
