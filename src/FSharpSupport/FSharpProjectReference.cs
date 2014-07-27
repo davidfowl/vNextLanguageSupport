@@ -55,7 +55,7 @@ namespace FSharpSupport
                 throw new CompilationException(result.Errors.ToList());
             }
 
-            var assemblyPath = Path.Combine(outputDir, _project.Name + ".exe");
+            var assemblyPath = Path.Combine(outputDir, _project.Name + ".dll");
 
             return loaderEngine.LoadFile(assemblyPath);
         }
