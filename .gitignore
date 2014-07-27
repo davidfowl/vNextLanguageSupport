@@ -22,4 +22,4 @@ nuget.exe
 *.ncrunchsolution
 *.*sdf
 *.ipch
-/CustomProjectLoaderSample.sln.ide
+/*.sln.ide
