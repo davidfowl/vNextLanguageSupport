@@ -8,7 +8,7 @@
         "assembly": "FSharpSupport",
         "projectExportProviderType": "FSharpSupport.FSharpProjectExportProvider"
     },
-    "configurations" : {
+    "frameworks" : {
         "net45" : { }
     }
 }

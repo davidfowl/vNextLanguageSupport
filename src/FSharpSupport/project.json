@@ -3,7 +3,7 @@
         "Microsoft.Framework.Runtime": "1.0.0-*"
     },
 
-    "configurations" : {
+    "frameworks" : {
         "net45" : { 
             "dependencies": {
             }
