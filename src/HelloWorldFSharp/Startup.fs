@@ -10,9 +10,10 @@ type Startup() =
         let ret = async {
                         let payload = "Hello World"
                         context.Response.ContentLength <- new Nullable<int64>(int64 (payload.Length))
-                        context.Response.WriteAsync(payload) |> Async.AwaitIAsyncResult |> ignore
+                        let! succeeded = context.Response.WriteAsync(payload) |> Async.AwaitIAsyncResult
+                        return ()
                     }
-        Task.Factory.StartNew(fun () -> ret |> Async.RunSynchronously)
+        Async.StartAsTask ret
 
     member x.Configure (app : IBuilder) = 
         //let run : Func<HttpContext, unit> = new Func<HttpContext, unit>(writeResponse)
