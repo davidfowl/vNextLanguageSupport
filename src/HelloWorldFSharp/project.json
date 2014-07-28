@@ -1,15 +1,20 @@
 ﻿{
     "dependencies": {
         "FSharpSupport": "",
-        "Microsoft.AspNet.Server.IIS": "1.0.0-*"
+        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-*"
     },
-    "code": ["Startup.fs"],
+    "code": [ "Startup.fs" ],
     "language": {
         "name": "F#",
         "assembly": "FSharpSupport",
         "projectExportProviderType": "FSharpSupport.FSharpProjectExportProvider"
     },
-    "frameworks" : {
-        "net45" : { }
+    "commands": {
+        "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
+        "run": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
+    },
+    "frameworks": {
+        "net45": { }
     }
 }
