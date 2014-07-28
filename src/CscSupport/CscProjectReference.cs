@@ -57,7 +57,7 @@ namespace CscSupport
             return loaderEngine.LoadFile(assemblyPath);
         }
 
-        public IProjectBuildResult EmitAssembly(string outputPath)
+        public IDiagnosticResult EmitAssembly(string outputPath)
         {
             return Emit(outputPath, emitPdb: true, emitDocFile: true);
         }
@@ -86,7 +86,7 @@ namespace CscSupport
             }
         }
 
-        public IProjectBuildResult GetDiagnostics()
+        public IDiagnosticResult GetDiagnostics()
         {
             string outputDir = Path.Combine(Path.GetTempPath(), "diagnostics-" + Guid.NewGuid().ToString());
 
@@ -105,7 +105,7 @@ namespace CscSupport
             return _project.SourceFiles.Select(p => (ISourceReference)new SourceFileReference(p)).ToList();
         }
 
-        public IProjectBuildResult Emit(string outputPath, bool emitPdb, bool emitDocFile)
+        public IDiagnosticResult Emit(string outputPath, bool emitPdb, bool emitDocFile)
         {
             var tempBasePath = Path.Combine(outputPath, _project.Name, "obj");
             var outputDll = Path.Combine(outputPath, _project.Name + ".dll");
@@ -234,7 +234,7 @@ namespace CscSupport
 
             if (process.ExitCode != 0)
             {
-                return new ProjectBuildResult(success: false, warnings: warnings, errors: errors);
+                return new DiagnosticResult(success: false, warnings: warnings, errors: errors);
             }
 
             // Nuke the temporary references on disk
@@ -242,7 +242,7 @@ namespace CscSupport
 
             Directory.Delete(tempBasePath);
 
-            return new ProjectBuildResult(success: true, warnings: warnings, errors: errors);
+            return new DiagnosticResult(success: true, warnings: warnings, errors: errors);
         }
     }
 }

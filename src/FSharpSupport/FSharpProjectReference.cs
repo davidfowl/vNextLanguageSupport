@@ -60,7 +60,7 @@ namespace FSharpSupport
             return loaderEngine.LoadFile(assemblyPath);
         }
 
-        public IProjectBuildResult EmitAssembly(string outputPath)
+        public IDiagnosticResult EmitAssembly(string outputPath)
         {
             return Emit(outputPath, emitPdb: true, emitDocFile: true);
         }
@@ -89,7 +89,7 @@ namespace FSharpSupport
             }
         }
 
-        public IProjectBuildResult GetDiagnostics()
+        public IDiagnosticResult GetDiagnostics()
         {
             string outputDir = Path.Combine(Path.GetTempPath(), "diagnostics-" + Guid.NewGuid().ToString());
 
@@ -109,7 +109,7 @@ namespace FSharpSupport
                                        .ToList();
         }
 
-        public IProjectBuildResult Emit(string outputPath, bool emitPdb, bool emitDocFile, bool emitExe = false)
+        public IDiagnosticResult Emit(string outputPath, bool emitPdb, bool emitDocFile, bool emitExe = false)
         {
             var tempBasePath = Path.Combine(outputPath, _project.Name, "obj");
             var outputDll = Path.Combine(outputPath, _project.Name + (emitExe ? ".exe" : ".dll"));
@@ -243,7 +243,7 @@ namespace FSharpSupport
 
             if (process.ExitCode != 0)
             {
-                return new ProjectBuildResult(success: false, warnings: warnings, errors: errors);
+                return new DiagnosticResult(success: false, warnings: warnings, errors: errors);
             }
 
             // Nuke the temporary references on disk
@@ -251,7 +251,7 @@ namespace FSharpSupport
 
             Directory.Delete(tempBasePath);
 
-            return new ProjectBuildResult(success: true, warnings: warnings, errors: errors);
+            return new DiagnosticResult(success: true, warnings: warnings, errors: errors);
         }
     }
 }
