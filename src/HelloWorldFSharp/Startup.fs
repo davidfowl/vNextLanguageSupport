@@ -13,7 +13,7 @@ type Startup() =
                         let! succeeded = context.Response.WriteAsync(payload) |> Async.AwaitIAsyncResult
                         return ()
                     }
-        Async.StartAsTask ret
+        Async.StartAsTask ret :> Task
 
     member x.Configure (app : IBuilder) = 
         //let run : Func<HttpContext, unit> = new Func<HttpContext, unit>(writeResponse)
