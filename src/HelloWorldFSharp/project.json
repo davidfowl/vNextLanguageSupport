@@ -1,8 +1,9 @@
 ﻿{
     "dependencies": {
-        "FSharpSupport": ""
+        "FSharpSupport": "",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-*"
     },
-    "code": ["Program.fs"],
+    "code": ["Startup.fs"],
     "language": {
         "name": "F#",
         "assembly": "FSharpSupport",
