@@ -22,6 +22,8 @@ namespace MySampleApplication
             Console.WriteLine(c);
 
             Console.WriteLine("Using an assembly neutral interface the app name is {0}", _env.ApplicationName);
+
+            Console.ReadLine();
         }
     }
 }
