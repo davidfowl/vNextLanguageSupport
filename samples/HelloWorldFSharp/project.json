@@ -8,7 +8,7 @@
     "language": {
         "name": "F#",
         "assembly": "FSharpSupport",
-        "projectExportProviderType": "FSharpSupport.FSharpProjectExportProvider"
+        "projectReferenceProviderType": "FSharpSupport.FSharpProjectReferenceProvider"
     },
     "commands": {
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",

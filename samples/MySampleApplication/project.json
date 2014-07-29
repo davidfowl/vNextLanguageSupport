@@ -6,7 +6,7 @@
     },
     "language": {
         "assembly": "CscSupport",
-        "projectExportProviderType": "CscSupport.CscProjectExportProvider"
+        "projectReferenceProviderType": "CscSupport.CscProjectReferenceProvider"
     },
     "frameworks" : {
         "net45" : { },

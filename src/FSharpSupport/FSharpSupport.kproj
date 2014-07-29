@@ -26,7 +26,7 @@
     <Content Include="Project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FSharpProjectExportProvider.cs" />
+    <Compile Include="FSharpProjectReferenceProvider.cs" />
     <Compile Include="FSharpProjectReference.cs" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\AspNet\Microsoft.Web.AspNet.targets" Condition="'$(VSToolsPath)' != ''" />
