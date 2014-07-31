@@ -80,7 +80,7 @@ namespace FSharpSupport
 
                 using (var fs = File.OpenRead(Path.Combine(outputDir, _project.Name + ".dll")))
                 {
-                    fs.CopyToAsync(stream);
+                    fs.CopyTo(stream);
                 }
             }
             finally
