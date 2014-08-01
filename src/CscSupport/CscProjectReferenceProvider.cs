@@ -7,9 +7,15 @@ namespace CscSupport
 {
     public class CscProjectReferenceProvider : IProjectReferenceProvider
     {
-        public IMetadataProjectReference GetProjectReference(Project project, FrameworkName targetFramework, string configuration, ILibraryExport projectExport)
+        public IMetadataProjectReference GetProjectReference(
+            Project project, 
+            FrameworkName targetFramework, 
+            string configuration,
+            IEnumerable<IMetadataReference> incomingReferences, 
+            IEnumerable<ISourceReference> incomingSourceReferences, 
+            IList<IMetadataReference> outgoingReferences)
         {
-            return new CscProjectReference(project, targetFramework, configuration, projectExport);
+            return new CscProjectReference(project, targetFramework, configuration, incomingReferences, incomingSourceReferences);
         }
     }
 }

@@ -12,17 +12,23 @@ namespace CscSupport
 {
     public class CscProjectReference : IMetadataProjectReference
     {
-        private readonly string _configuration;
-        private readonly Project _project;
-        private readonly ILibraryExport _projectExport;
         private readonly FrameworkName _targetFramework;
+        private readonly Project _project;
+        private readonly string _configuration;
+        private readonly IEnumerable<IMetadataReference> _metadataReferences;
+        private readonly IEnumerable<ISourceReference> _sourceReferences;
 
-        public CscProjectReference(Project project, FrameworkName targetFramework, string configuration, ILibraryExport projectExport)
+        public CscProjectReference(Project project, 
+                                   FrameworkName targetFramework, 
+                                   string configuration, 
+                                   IEnumerable<IMetadataReference> metadataReferences,
+                                   IEnumerable<ISourceReference> sourceReferences)
         {
             _project = project;
             _targetFramework = targetFramework;
             _configuration = configuration;
-            _projectExport = projectExport;
+            _metadataReferences = metadataReferences;
+            _sourceReferences = sourceReferences;
         }
 
         public string Name
@@ -149,7 +155,7 @@ namespace CscSupport
             // - Package references are turned into the appropriate assemblies
             // - Assembly neutral references
             // Each IMetadaReference maps to an assembly
-            foreach (var reference in _projectExport.MetadataReferences)
+            foreach (var reference in _metadataReferences)
             {
                 // Skip this project
                 if (reference.Name == typeof(CscProjectReference).Assembly.GetName().Name)
