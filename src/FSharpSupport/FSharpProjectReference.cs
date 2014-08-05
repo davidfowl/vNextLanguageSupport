@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.Framework.Runtime;
+using Microsoft.FSharp.Compiler.SimpleSourceCodeServices;
 
 namespace FSharpSupport
 {
@@ -20,9 +21,9 @@ namespace FSharpSupport
         private readonly string _configuration;
         private readonly IEnumerable<IMetadataReference> _metadataReferences;
 
-        public FSharpProjectReference(Project project, 
-                                      FrameworkName targetFramework, 
-                                      string configuration, 
+        public FSharpProjectReference(Project project,
+                                      FrameworkName targetFramework,
+                                      string configuration,
                                       IEnumerable<IMetadataReference> metadataReferences)
         {
             _project = project;
@@ -118,12 +119,12 @@ namespace FSharpSupport
             var outputDll = Path.Combine(outputPath, _project.Name + (emitExe ? ".exe" : ".dll"));
 
             // csc /out:foo.dll / target:library Program.cs
-            var fscArgBuilder = new StringBuilder()
-                         .Append("--noframework ")
-                         .Append("--nologo ")
-                         .AppendFormat(@"--out:""{0}""", outputDll)
-                         .Append(" ")
-                         .AppendFormat("--target:{0} ", emitExe ? "exe" : "library");
+            var fscArgBuilder = new List<string>();
+            fscArgBuilder.Add("fsc.exe");
+            fscArgBuilder.Add("--noframework");
+            fscArgBuilder.Add("--nologo");
+            fscArgBuilder.Add("--out:" + outputDll);
+            fscArgBuilder.Add("--target:" + (emitExe ? "exe" : "library"));
 
             Directory.CreateDirectory(tempBasePath);
 
@@ -131,22 +132,21 @@ namespace FSharpSupport
             {
                 var pdb = Path.Combine(outputPath, _project.Name + ".pdb");
 
-                fscArgBuilder = fscArgBuilder
-                    .Append("--debug ")
-                    .AppendFormat(@"--pdb:""{0}"" ", pdb);
+                fscArgBuilder.Add("--debug");
+                fscArgBuilder.Add("--optimize-");
+                fscArgBuilder.Add("--tailcalls-");
+                fscArgBuilder.Add("--pdb:" + pdb);
             }
 
             if (emitDocFile)
             {
                 var doc = Path.Combine(outputPath, _project.Name + ".xml");
 
-                fscArgBuilder = fscArgBuilder
-                    .AppendFormat(@"--doc:""{0}"" ", doc);
+                fscArgBuilder.Add("--doc:" + doc);
             }
 
             // F# cares about order so assume that the files were listed in order
-            var fscArgs = fscArgBuilder.Append(string.Join(" ", _project.SourceFiles.Select(s => "\"" + s + "\"")))
-                                       .Append(" ");
+            fscArgBuilder.AddRange(_project.SourceFiles);
 
             var tempFiles = new List<string>();
 
@@ -168,8 +168,7 @@ namespace FSharpSupport
                 var fileReference = reference as IMetadataFileReference;
                 if (fileReference != null)
                 {
-                    fscArgs.AppendFormat(@"-r:""{0}""", fileReference.Path)
-                      .Append(" ");
+                    fscArgBuilder.Add(@"-r:" + fileReference.Path);
                 }
 
                 // Assembly neutral references
@@ -181,8 +180,7 @@ namespace FSharpSupport
                     // Write the ANI to disk for csc
                     File.WriteAllBytes(tempEmbeddedPath, embeddedReference.Contents);
 
-                    fscArgs.AppendFormat(@"-r:""{0}""", tempEmbeddedPath)
-                      .Append(" ");
+                    fscArgBuilder.Add("-r:" + tempEmbeddedPath);
 
                     tempFiles.Add(tempEmbeddedPath);
                 }
@@ -200,8 +198,7 @@ namespace FSharpSupport
                         projectReference.EmitReferenceAssembly(fs);
                     }
 
-                    fscArgs.AppendFormat(@"-r:""{0}""", tempProjectDll)
-                      .Append(" ");
+                    fscArgBuilder.Add(@"-r:" + tempProjectDll);
 
                     tempFiles.Add(tempProjectDll);
                 }
@@ -210,41 +207,13 @@ namespace FSharpSupport
             // For debugging
             // Console.WriteLine(fscArgs.ToString());
 
-            var si = new ProcessStartInfo
-            {
-                FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft SDKs\F#\3.1\Framework\v4.0\Fsc.exe"),
-                Arguments = fscArgs.ToString(),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+            var scs = new SimpleSourceCodeServices();
+            var result = scs.Compile(fscArgBuilder.ToArray());
 
-            var process = Process.Start(si);
-            process.WaitForExit();
+            var warnings = result.Item1.Where(i => i.Severity.IsWarning).Select(i => i.ToString()).ToArray();
+            var errors = result.Item1.Where(i => i.Severity.IsError).Select(i => i.ToString()).ToArray();
 
-            var errors = new List<string>();
-            var warnings = new List<string>();
-
-            string line = null;
-            while ((line = process.StandardError.ReadLine()) != null)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    continue;
-                }
-
-                if (line.Contains(" warning "))
-                {
-                    warnings.Add(line);
-                }
-                else
-                {
-                    errors.Add(line);
-                }
-            }
-
-            if (process.ExitCode != 0)
+            if (result.Item2 != 0)
             {
                 return new DiagnosticResult(success: false, warnings: warnings, errors: errors);
             }
