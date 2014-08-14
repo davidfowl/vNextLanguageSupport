@@ -11,10 +11,13 @@ namespace CscSupport
             Project project, 
             FrameworkName targetFramework, 
             string configuration,
-            IEnumerable<IMetadataReference> incomingReferences, 
-            IEnumerable<ISourceReference> incomingSourceReferences, 
+            Func<ILibraryExport> referenceResolver,
             IList<IMetadataReference> outgoingReferences)
         {
+            var export = referenceResolver();
+            var incomingReferences = export.MetadataReferences;
+            var incomingSourceReferences = export.SourceReferences;
+
             return new CscProjectReference(project, targetFramework, configuration, incomingReferences, incomingSourceReferences);
         }
     }
