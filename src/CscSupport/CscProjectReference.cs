@@ -18,9 +18,9 @@ namespace CscSupport
         private readonly IEnumerable<IMetadataReference> _metadataReferences;
         private readonly IEnumerable<ISourceReference> _sourceReferences;
 
-        public CscProjectReference(Project project, 
-                                   FrameworkName targetFramework, 
-                                   string configuration, 
+        public CscProjectReference(Project project,
+                                   FrameworkName targetFramework,
+                                   string configuration,
                                    IEnumerable<IMetadataReference> metadataReferences,
                                    IEnumerable<ISourceReference> sourceReferences)
         {
@@ -59,7 +59,7 @@ namespace CscSupport
             }
 
             var assemblyPath = Path.Combine(outputDir, _project.Name + ".dll");
-            
+
             return loaderEngine.LoadFile(assemblyPath);
         }
 
@@ -209,12 +209,24 @@ namespace CscSupport
             // For debugging
             // Console.WriteLine(cscArgs.ToString());
 
+            var cscPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework\v4.0.30319\csc.exe");
+            var useShellExecute = true;
+
+            if (File.Exists(cscPath))
+            {
+                useShellExecute = true;
+            }
+            else
+            {
+                cscPath = "mcs";
+            }
+
             var si = new ProcessStartInfo
             {
-                FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework\v4.0.30319\csc.exe"),
+                FileName = cscPath,
                 Arguments = cscArgs.ToString(),
-                UseShellExecute = false,
-                CreateNoWindow = true,
+                UseShellExecute = !useShellExecute,
+                CreateNoWindow = useShellExecute,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
