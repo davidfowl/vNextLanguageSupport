@@ -15,6 +15,6 @@ type Startup() =
                     }
         Async.StartAsTask ret :> Task
 
-    member x.Configure (app : IBuilder) = 
+    member x.Configure (app : IApplicationBuilder) = 
         //let run : Func<HttpContext, unit> = new Func<HttpContext, unit>(writeResponse)
         app.Run(new RequestDelegate(writeResponse))

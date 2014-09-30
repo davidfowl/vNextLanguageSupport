@@ -9,8 +9,7 @@ namespace CscSupport
     {
         public IMetadataProjectReference GetProjectReference(
             Project project, 
-            FrameworkName targetFramework, 
-            string configuration,
+            ILibraryKey libraryKey,
             Func<ILibraryExport> referenceResolver,
             IList<IMetadataReference> outgoingReferences)
         {
@@ -18,7 +17,7 @@ namespace CscSupport
             var incomingReferences = export.MetadataReferences;
             var incomingSourceReferences = export.SourceReferences;
 
-            return new CscProjectReference(project, targetFramework, configuration, incomingReferences, incomingSourceReferences);
+            return new CscProjectReference(project, libraryKey.TargetFramework, libraryKey.Configuration, incomingReferences, incomingSourceReferences);
         }
     }
 }

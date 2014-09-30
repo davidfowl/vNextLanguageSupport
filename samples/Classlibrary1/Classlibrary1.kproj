@@ -8,24 +8,24 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
   </PropertyGroup>
-
   <Import Project="$(VSToolsPath)\AspNet\Microsoft.Web.AspNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>0a362e72-7d7e-42dc-9c93-17f03c082f91</ProjectGuid>
     <OutputType>Library</OutputType>
   </PropertyGroup>
-
   <PropertyGroup Condition="$(OutputType) == 'Console'">
     <DebuggerFlavor>ConsoleDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="$(OutputType) == 'Web'">
     <DebuggerFlavor>WebDebugger</DebuggerFlavor>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" Label="Configuration">
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <ProduceOutputsOnBuild>true</ProduceOutputsOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />

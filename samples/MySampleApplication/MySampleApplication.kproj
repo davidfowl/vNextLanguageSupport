@@ -24,6 +24,9 @@
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <ProduceOutputsOnBuild>true</ProduceOutputsOnBuild>
+  </PropertyGroup>
   <ItemGroup>
     <Content Include="project.json" />
   </ItemGroup>

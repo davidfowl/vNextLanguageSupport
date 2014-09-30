@@ -9,8 +9,8 @@
         "projectReferenceProviderType": "CscSupport.CscProjectReferenceProvider"
     },
     "frameworks" : {
-        "net45" : { },
-        "k10" : { 
+        "aspnet50" : { },
+        "aspnetcore50" : { 
             "dependencies": {
                 "System.Console": "4.0.0.0"
             }
