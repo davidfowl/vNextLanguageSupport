@@ -113,6 +113,9 @@ namespace CscSupport
 
         public IDiagnosticResult Emit(string outputPath, bool emitPdb, bool emitDocFile)
         {
+            var cscPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework\v4.0.30319\csc.exe");
+            var isMono = !File.Exists(cscPath);
+            
             var tempBasePath = Path.Combine(outputPath, _project.Name, "obj");
             var outputDll = Path.Combine(outputPath, _project.Name + ".dll");
 
@@ -128,11 +131,15 @@ namespace CscSupport
 
             if (emitPdb)
             {
-                var pdb = Path.Combine(outputPath, _project.Name + ".pdb");
-
                 cscArgBuilder = cscArgBuilder
-                    .Append("/debug ")
-                    .AppendFormat(@"/pdb:""{0}"" ", pdb);
+                    .Append("/debug ");
+
+                if (!isMono) {
+                    var pdb = Path.Combine(outputPath, _project.Name + ".pdb");
+
+                    cscArgBuilder = cscArgBuilder
+                        .AppendFormat(@"/pdb:""{0}"" ", pdb);
+                }
             }
 
             if (emitDocFile)
@@ -209,14 +216,9 @@ namespace CscSupport
             // For debugging
             // Console.WriteLine(cscArgs.ToString());
 
-            var cscPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework\v4.0.30319\csc.exe");
-            var useShellExecute = true;
+            var useShellExecute = isMono;
 
-            if (File.Exists(cscPath))
-            {
-                useShellExecute = true;
-            }
-            else
+            if (isMono)
             {
                 cscPath = "mcs";
             }
@@ -225,8 +227,8 @@ namespace CscSupport
             {
                 FileName = cscPath,
                 Arguments = cscArgs.ToString(),
-                UseShellExecute = !useShellExecute,
-                CreateNoWindow = useShellExecute,
+                UseShellExecute = false,
+                CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
