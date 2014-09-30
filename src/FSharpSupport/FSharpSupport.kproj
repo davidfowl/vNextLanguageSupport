@@ -26,7 +26,7 @@
     <ProduceOutputsOnBuild>true</ProduceOutputsOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Project.json" />
+    <Content Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FSharpProjectReferenceProvider.cs" />
