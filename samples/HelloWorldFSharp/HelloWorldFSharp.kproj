@@ -28,11 +28,5 @@
     <DevelopmentServerPort>63749</DevelopmentServerPort>
     <ProduceOutputsOnBuild>true</ProduceOutputsOnBuild>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Startup.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="project.json" />
-  </ItemGroup>
   <Import Project="$(VSToolsPath)\AspNet\Microsoft.Web.AspNet.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>
