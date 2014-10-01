@@ -232,6 +232,8 @@ namespace CscSupport
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
+            
+            si.EnvironmentVariables ["MONO_OPTIONS"] = "";
 
             var process = Process.Start(si);
             process.WaitForExit();
