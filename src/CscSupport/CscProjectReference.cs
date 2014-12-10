@@ -47,7 +47,7 @@ namespace CscSupport
             }
         }
 
-        public Assembly Load(IAssemblyLoaderEngine loaderEngine)
+        public Assembly Load(IAssemblyLoadContext loadContext)
         {
             string outputDir = Path.Combine(Path.GetTempPath(), "dynamic-assemblies");
 
@@ -60,7 +60,7 @@ namespace CscSupport
 
             var assemblyPath = Path.Combine(outputDir, _project.Name + ".dll");
 
-            return loaderEngine.LoadFile(assemblyPath);
+            return loadContext.LoadFile(assemblyPath);
         }
 
         public IDiagnosticResult EmitAssembly(string outputPath)
